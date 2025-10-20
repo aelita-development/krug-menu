@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Viewer — English / Serbian</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .buttons button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2563eb;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .buttons button:hover {
+      background-color: #1e40af;
+    }
+
+    .pdf-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: #e5e7eb;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    @media (max-width: 768px) {
+      iframe {
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="buttons">
+    <button onclick="switchPDF('test-en.pdf')">Hrana</button>
+    <button onclick="switchPDF('pice.pdf')">Piće</button>
+  </div>
+
+  <div class="pdf-container">
+    <iframe id="pdf-viewer" src="test-en.pdf"></iframe>
+  </div>
+
+  <script>
+    function switchPDF(pdfFile) {
+      document.getElementById('pdf-viewer').src = pdfFile;
+    }
+  </script>
+
+</body>
+</html>

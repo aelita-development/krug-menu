@@ -1,1 +1,159 @@
-<p>test</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Flipbook with Turn.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        #flipbook {
+            width: 1000px;
+            height: 600px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        #flipbook .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            overflow: hidden;
+        }
+        #flipbook .page canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        #flipbook .hard {
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        #flipbook .turn-page {
+            background-color: white;
+        }
+        #error-message {
+            color: red;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="flipbook">
+        <!-- Pages will be appended here -->
+    </div>
+    <div id="error-message"></div>
+
+    <script type="module">
+        import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs';
+
+        // Set worker source for PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.mjs';
+
+        async function loadPDF() {
+            const url = 'test.pdf';
+            console.log('Attempting to load PDF:', url);
+            const flipbook = $('#flipbook');
+            flipbook.empty();
+
+            // Add a cover page
+            flipbook.append('<div class="hard"><h1>PDF Flipbook</h1><p>Loading pages...</p></div>');
+
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                console.log('PDF loaded successfully. Total pages:', pdf.numPages);
+                const totalPages = pdf.numPages;
+
+                let pageWidth = 500;
+                let pageHeight = 600;
+
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    console.log('Rendering page', pageNum);
+                    const page = await pdf.getPage(pageNum);
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale });
+
+                    if (pageNum === 1) {
+                        pageWidth = viewport.width;
+                        pageHeight = viewport.height;
+                        console.log('Page dimensions:', pageWidth, 'x', pageHeight);
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    const pageDiv = $(`<div class="page" data-page="${pageNum}"></div>`);
+                    pageDiv.append(canvas);
+                    flipbook.append(pageDiv);
+                }
+
+                // Add back cover
+                flipbook.append('<div class="hard"><h1>End of Book</h1></div>');
+
+                // Initialize turn.js
+                flipbook.turn({
+                    width: pageWidth * 2,
+                    height: pageHeight,
+                    display: 'double',
+                    acceleration: true,
+                    gradients: true,
+                    autoCenter: true,
+                    when: {
+                        turning: function(event, page, view) {
+                            console.log('Turning to page ' + page);
+                        },
+                        turned: function(event, page, view) {
+                            console.log('Turned to page ' + page);
+                        }
+                    }
+                });
+
+                flipbook.css({
+                    width: pageWidth * 2 + 'px',
+                    height: pageHeight + 'px'
+                });
+
+                $('#flipbook .page').css({
+                    width: pageWidth + 'px',
+                    height: pageHeight + 'px'
+                });
+
+                console.log('Flipbook initialized with ' + totalPages + ' pages');
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                $('#error-message').html(`Failed to load test.pdf: ${error.message}. Ensure the file is in the same directory and accessible. Try serving via a local server (e.g., python -m http.server).`);
+            }
+        }
+
+        $(document).ready(function() {
+            console.log('Document ready, starting PDF load');
+            loadPDF();
+        });
+    </script>
+</body>
+</html>
