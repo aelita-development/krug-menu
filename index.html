@@ -27,7 +27,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
   }
 
   .buttons button {
@@ -49,6 +49,7 @@
     width: 100%;
     height: calc(100vh - 56px);
     padding: 12px 0;
+    position: relative;
   }
 
   .swiper-slide {
@@ -64,34 +65,55 @@
     border-radius: 6px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
   }
+
+  /* Desktop arrows */
+  .swiper-button-next, .swiper-button-prev {
+    color: #CEA277;
+    display: none; /* hidden by default, only show on desktop */
+  }
+
+  @media(min-width: 768px) {
+    .swiper-button-next, .swiper-button-prev {
+      display: block;
+    }
+  }
 </style>
 </head>
 <body>
 
 <div class="buttons">
-  <button onclick="loadMenu('jelovnik', 11)">Hrana</button>
-  <button onclick="loadMenu('pice', 6)">Piće</button>
+  <button onclick="loadMenu('jelovnik', 10)">Hrana</button>
+  <button onclick="loadMenu('pice', 5)">Piće</button>
 </div>
 
 <div class="swiper mySwiper">
   <div class="swiper-wrapper" id="swiper-wrapper"></div>
   <div class="swiper-pagination"></div>
+
+  <!-- Arrows -->
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
 </div>
 
 <script>
 let swiper = new Swiper('.mySwiper', {
-  effect: 'slide', // normal slide effect
+  effect: 'slide',
   grabCursor: true,
-  slidesPerView: 1, // 1 page on mobile
+  slidesPerView: 1,
   spaceBetween: 20,
   pagination: {
     el: '.swiper-pagination',
     clickable: true
   },
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
   breakpoints: {
-    768: { // desktop
-      slidesPerView: 2, // 2 pages side by side
-      spaceBetween: 30
+    768: {
+      slidesPerView: 2,
+      slidesPerGroup: 2,
+      spaceBetween: 30,
     }
   }
 });
@@ -114,7 +136,6 @@ function loadMenu(folder, pageCount) {
   swiper.slideTo(0);
 }
 
-// Initial menu
 loadMenu('jelovnik', 11);
 </script>
 
