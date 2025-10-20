@@ -1,31 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel KRUG - meni</title>
-  <style>
-    /* Remove default margins and padding */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden; /* optional, removes scrollbars */
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book-style Menu Viewer</title>
 
-    /* Make iframe full-screen */
-    #pdf-viewer {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #CEA277;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .buttons button:hover {
+    background-color: #CEA260;
+  }
+
+  .swiper {
+    width: 100%;
+    height: calc(100vh - 56px);
+    padding: 12px 0;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e5e7eb;
+  }
+
+  .swiper-slide img {
+    max-width: 95%;
+    max-height: 90%;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+</style>
 </head>
 <body>
-  <iframe
-    id="pdf-viewer"
-    src="https://www.krugrestoran.fit/jelovnik.pdf"
-  ></iframe>
+
+<div class="buttons">
+  <button onclick="loadMenu('jelovnik', 11)">Hrana</button>
+  <button onclick="loadMenu('pice', 6)">Piće</button>
+</div>
+
+<div class="swiper mySwiper">
+  <div class="swiper-wrapper" id="swiper-wrapper"></div>
+  <div class="swiper-pagination"></div>
+</div>
+
+<script>
+let swiper = new Swiper('.mySwiper', {
+  effect: 'slide', // normal slide effect
+  grabCursor: true,
+  slidesPerView: 1, // 1 page on mobile
+  spaceBetween: 20,
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true
+  },
+  breakpoints: {
+    768: { // desktop
+      slidesPerView: 2, // 2 pages side by side
+      spaceBetween: 30
+    }
+  }
+});
+
+function loadMenu(folder, pageCount) {
+  const wrapper = document.getElementById('swiper-wrapper');
+  wrapper.innerHTML = '';
+
+  for (let i = 1; i <= pageCount; i++) {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    const img = document.createElement('img');
+    img.src = `${folder}/${i}.png`;
+    img.alt = `${folder} page ${i}`;
+    slide.appendChild(img);
+    wrapper.appendChild(slide);
+  }
+
+  swiper.update();
+  swiper.slideTo(0);
+}
+
+// Initial menu
+loadMenu('jelovnik', 11);
+</script>
+
 </body>
 </html>

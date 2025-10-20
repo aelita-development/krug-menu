@@ -1,87 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hotel KRUG - meni</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book-style Menu Viewer</title>
 
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding: 12px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
-    .buttons button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #2563eb;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+  }
 
-    .buttons button:hover {
-      background-color: #1e40af;
-    }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
 
-    .pdf-container {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      background: #e5e7eb;
-    }
+  .buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #CEA277;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      border-radius: 10px;
-      background: #fff;
-    }
+  .buttons button:hover {
+    background-color: #CEA260;
+  }
 
-    @media (max-width: 768px) {
-      iframe {
-        border-radius: 0;
-        box-shadow: none;
-      }
-    }
-  </style>
+  .swiper {
+    width: 100%;
+    height: calc(100vh - 56px);
+    padding: 12px 0;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e5e7eb;
+  }
+
+  .swiper-slide img {
+    max-width: 95%;
+    max-height: 90%;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+</style>
 </head>
 <body>
 
-  <div class="buttons">
-    <button onclick="switchPDF('jelovnik.pdf')">Hrana</button>
-    <button onclick="switchPDF('pice.pdf')">Piće</button>
-  </div>
+<div class="buttons">
+  <button onclick="loadMenu('jelovnik', 11)">Hrana</button>
+  <button onclick="loadMenu('pice', 6)">Piće</button>
+</div>
 
-  <div class="pdf-container">
-    <iframe id="pdf-viewer" src="jelovnik.pdf"></iframe>
-  </div>
+<div class="swiper mySwiper">
+  <div class="swiper-wrapper" id="swiper-wrapper"></div>
+  <div class="swiper-pagination"></div>
+</div>
 
-  <script>
-    function switchPDF(pdfFile) {
-      document.getElementById('pdf-viewer').src = pdfFile;
+<script>
+let swiper = new Swiper('.mySwiper', {
+  effect: 'slide', // normal slide effect
+  grabCursor: true,
+  slidesPerView: 1, // 1 page on mobile
+  spaceBetween: 20,
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true
+  },
+  breakpoints: {
+    768: { // desktop
+      slidesPerView: 2, // 2 pages side by side
+      spaceBetween: 30
     }
-  </script>
+  }
+});
+
+function loadMenu(folder, pageCount) {
+  const wrapper = document.getElementById('swiper-wrapper');
+  wrapper.innerHTML = '';
+
+  for (let i = 1; i <= pageCount; i++) {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    const img = document.createElement('img');
+    img.src = `${folder}/${i}.png`;
+    img.alt = `${folder} page ${i}`;
+    slide.appendChild(img);
+    wrapper.appendChild(slide);
+  }
+
+  swiper.update();
+  swiper.slideTo(0);
+}
+
+// Initial menu
+loadMenu('jelovnik', 11);
+</script>
 
 </body>
 </html>
